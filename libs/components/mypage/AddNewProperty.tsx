@@ -7,11 +7,11 @@ import { REACT_APP_API_URL, propertySquare } from '../../config';
 import { PropertyInput } from '../../types/property/property.input';
 import axios from 'axios';
 import { getJwtToken } from '../../auth';
-import { userVar } from '../../../apollo/store';
+import { sweetErrorHandling, sweetMixinErrorAlert, sweetMixinSuccessAlert } from '../../sweetAlert';
 import { useMutation, useQuery, useReactiveVar } from '@apollo/client';
+import { userVar } from '../../../apollo/store';
 import { CREATE_PROPERTY, UPDATE_PROPERTY } from '../../../apollo/user/mutation';
 import { GET_PROPERTY } from '../../../apollo/user/query';
-import { sweetErrorHandling, sweetMixinErrorAlert, sweetMixinSuccessAlert } from '../../sweetAlert';
 
 const AddProperty = ({ initialValues, ...props }: any) => {
 	const device = useDeviceDetect();
@@ -24,9 +24,9 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 	const user = useReactiveVar(userVar);
 
 	/** APOLLO REQUESTS **/
-	// let getPropertyData: any, getPropertyLoading: any;
 	const [createProperty] = useMutation(CREATE_PROPERTY);
 	const [updateProperty] = useMutation(UPDATE_PROPERTY);
+
 	const {
 		loading: getPropertyLoading,
 		data: getPropertyData,
@@ -34,10 +34,12 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 		refetch: getPropertyRefetch,
 	} = useQuery(GET_PROPERTY, {
 		fetchPolicy: 'network-only',
-		variables: { input: router.query.propertyId },
+		variables: {
+			input: router.query.propertyId,
+		},
 	});
 
-	/** LIFECYCLES **/
+	/** LIFECYCLE **/
 	useEffect(() => {
 		setInsertPropertyData({
 			...insertPropertyData,
@@ -128,9 +130,6 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 		}
 	};
 
-	// const insertPropertyHandler = useCallback(async () => {}, [insertPropertyData]);
-
-	// const updatePropertyHandler = useCallback(async () => {}, [insertPropertyData]);
 	const insertPropertyHandler = useCallback(async () => {
 		try {
 			const result = await createProperty({
@@ -138,7 +137,9 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 					input: insertPropertyData,
 				},
 			});
-			await sweetMixinSuccessAlert('This property has been created successfully.');
+
+			await sweetMixinSuccessAlert('This property has been created successfully!');
+
 			await router.push({
 				pathname: '/mypage',
 				query: {
@@ -159,7 +160,9 @@ const AddProperty = ({ initialValues, ...props }: any) => {
 					input: insertPropertyData,
 				},
 			});
-			await sweetMixinSuccessAlert('This property has been updated successfully.');
+
+			await sweetMixinSuccessAlert('This property has been updated successfully!');
+
 			await router.push({
 				pathname: '/mypage',
 				query: {

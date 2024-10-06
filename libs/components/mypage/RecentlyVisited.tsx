@@ -22,7 +22,9 @@ const RecentlyVisited: NextPage = () => {
 		refetch: getVisitedRefetch,
 	} = useQuery(GET_VISITED, {
 		fetchPolicy: 'network-only',
-		variables: { input: searchVisited },
+		variables: {
+			input: searchVisited,
+		},
 		onCompleted(data: T) {
 			setRecentlyVisited(data.getVisited?.list);
 			setTotal(data.getVisited?.metaCounter?.[0]?.total || 0);
@@ -70,7 +72,7 @@ const RecentlyVisited: NextPage = () => {
 						</Stack>
 						<Stack className="total-result">
 							<Typography>
-								Total {total} recently visited propert{total > 1 ? 'ies' : 'y'}
+								Total {total} recently visited property{total > 1 ? 'ies' : 'y'}
 							</Typography>
 						</Stack>
 					</Stack>

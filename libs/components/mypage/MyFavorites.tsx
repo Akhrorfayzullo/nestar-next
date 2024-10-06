@@ -6,8 +6,8 @@ import PropertyCard from '../property/PropertyCard';
 import { Property } from '../../types/property/property';
 import { T } from '../../types/common';
 import { useMutation, useQuery } from '@apollo/client';
-import { GET_FAVORITES } from '../../../apollo/user/query';
 import { LIKE_TARGET_PROPERTY } from '../../../apollo/user/mutation';
+import { GET_FAVORITES } from '../../../apollo/user/query';
 import { Messages } from '../../config';
 import { sweetMixinErrorAlert } from '../../sweetAlert';
 
@@ -19,6 +19,7 @@ const MyFavorites: NextPage = () => {
 
 	/** APOLLO REQUESTS **/
 	const [likeTargetProperty] = useMutation(LIKE_TARGET_PROPERTY);
+
 	const {
 		loading: getFavoritesLoading,
 		data: getFavoritesData,
@@ -26,7 +27,9 @@ const MyFavorites: NextPage = () => {
 		refetch: getFavoritesRefetch,
 	} = useQuery(GET_FAVORITES, {
 		fetchPolicy: 'network-only',
-		variables: { input: searchFavorites },
+		variables: {
+			input: searchFavorites,
+		},
 		notifyOnNetworkStatusChange: true,
 		onCompleted(data: T) {
 			setMyFavorites(data.getFavorites?.list);
@@ -52,7 +55,7 @@ const MyFavorites: NextPage = () => {
 
 			await getFavoritesRefetch({ input: searchFavorites });
 		} catch (err: any) {
-			console.log('ERROR, LikePropertyHandler:', err.message);
+			console.log('Error =>', err);
 			sweetMixinErrorAlert(err.message).then();
 		}
 	};
@@ -71,7 +74,7 @@ const MyFavorites: NextPage = () => {
 				<Stack className="favorites-list-box">
 					{myFavorites?.length ? (
 						myFavorites?.map((property: Property) => {
-							return <PropertyCard property={property} myFavorites={true} likePropertyHandler={likePropertyHandler} />;
+							return <PropertyCard likePropertyHandler={likePropertyHandler} property={property} myFavorites={true} />;
 						})
 					) : (
 						<div className={'no-data'}>
@@ -93,7 +96,7 @@ const MyFavorites: NextPage = () => {
 						</Stack>
 						<Stack className="total-result">
 							<Typography>
-								Total {total} favorite propert{total > 1 ? 'ies' : 'y'}
+								Total {total} favorite property{total > 1 ? 'ies' : 'y'}
 							</Typography>
 						</Stack>
 					</Stack>

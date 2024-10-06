@@ -74,7 +74,7 @@ const CommunityCard = (props: CommunityCardProps) => {
 							<RemoveRedEyeIcon />
 						</IconButton>
 						<Typography className="view-cnt">{boardArticle?.articleViews}</Typography>
-						<IconButton color={'default'} onclick={(e: any) => likeArticleHandler(e, user, boardArticle?._id)}>
+						<IconButton onClick={(e: any) => likeArticleHandler(e, user, boardArticle?._id)} color={'default'}>
 							{boardArticle?.meLiked && boardArticle?.meLiked[0]?.myFavorite ? (
 								<FavoriteIcon color={'primary'} />
 							) : (

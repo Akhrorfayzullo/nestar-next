@@ -7,11 +7,11 @@ import { REACT_APP_API_URL } from '../../config';
 import { useRouter } from 'next/router';
 import axios from 'axios';
 import { T } from '../../types/common';
+import '@toast-ui/editor/dist/toastui-editor.css';
 import { useMutation } from '@apollo/client';
 import { CREATE_BOARD_ARTICLE } from '../../../apollo/user/mutation';
 import { Message } from '../../enums/common.enum';
-import { sweetErrorHandling, sweetTopSuccessAlert } from '../../sweetAlert';
-import '@toast-ui/editor/dist/toastui-editor.css';
+import { sweetErrorHandling, sweetTopSmallSuccessAlert } from '../../sweetAlert';
 
 const TuiEditor = () => {
 	const editorRef = useRef<Editor>(null),
@@ -81,7 +81,6 @@ const TuiEditor = () => {
 		memoizedValues.articleTitle = e.target.value;
 	};
 
-	// const handleRegisterButton = async () => {};
 	const handleRegisterButton = async () => {
 		try {
 			const editor = editorRef.current;
@@ -98,7 +97,7 @@ const TuiEditor = () => {
 				},
 			});
 
-			await sweetTopSuccessAlert('Article is created successfully', 700);
+			await sweetTopSmallSuccessAlert('Article is created successfully', 700);
 			await router.push({
 				pathname: '/mypage',
 				query: {
@@ -106,7 +105,7 @@ const TuiEditor = () => {
 				},
 			});
 		} catch (err: any) {
-			console.log(err);
+			console.log('error =>', err);
 			sweetErrorHandling(new Error(Message.INSERT_ALL_INPUTS)).then();
 		}
 	};
