@@ -49,11 +49,13 @@ const AgentList: NextPage = ({ initialInput, ...props }: any) => {
 		fetchPolicy: 'network-only',
 		variables: { input: searchFilter },
 		notifyOnNetworkStatusChange: true,
+
 		onCompleted: (data: T) => {
 			setAgents(data?.getAgents?.list);
 			setTotal(data?.getAgents?.metaCounter[0]?.total);
 		},
 	});
+	console.log(searchFilter, 'search Filter .........................................');
 
 	/** LIFECYCLES **/
 	useEffect(() => {
