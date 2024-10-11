@@ -9,7 +9,8 @@ import { RippleBadge } from '../../scss/MaterialTheme/styled';
 import { useReactiveVar } from '@apollo/client';
 import { socketVar, userVar } from '../../apollo/store';
 import { Member } from '../types/member/member';
-import { REACT_APP_API_URL } from '../config';
+import { Messages, REACT_APP_API_URL } from '../config';
+import { sweetErrorAlert } from '../sweetAlert';
 
 const NewMessage = (type: any) => {
 	if (type === 'right') {
@@ -52,8 +53,7 @@ const Chat = () => {
 	const chatContentRef = useRef<HTMLDivElement>(null);
 	const [messagesList, setMessagesList] = useState<MessagePayload[]>([]);
 	const [onlineUsers, setOnlineUsers] = useState<number>(0);
-	const textInput = useRef(null);
-	const [message, setMessage] = useState<string>('');
+	const [messageInput, setMessageInput] = useState<string>('');
 	const [open, setOpen] = useState(false);
 	const [openButton, setOpenButton] = useState(false);
 	const router = useRouter();
@@ -75,7 +75,7 @@ const Chat = () => {
 					const list: MessagePayload[] = data.list;
 					setMessagesList(list);
 					break;
-				case 'messages':
+				case 'message':
 					const newMessage: MessagePayload = data;
 					messagesList.push(newMessage);
 					setMessagesList([...messagesList]);
@@ -103,9 +103,9 @@ const Chat = () => {
 	const getInputMessageHandler = useCallback(
 		(e: any) => {
 			const text = e.target.value;
-			setMessage(text);
+			setMessageInput(text);
 		},
-		[message],
+		[messageInput],
 	);
 
 	const getKeyHandler = (e: any) => {
@@ -118,7 +118,13 @@ const Chat = () => {
 		}
 	};
 
-	const onClickHandler = () => {};
+	const onClickHandler = () => {
+		if (!messageInput) sweetErrorAlert(Messages.error4);
+		else {
+			socket.send(JSON.stringify({ event: 'message', data: messageInput }));
+			setMessageInput('');
+		}
+	};
 
 	return (
 		<Stack className="chatting">
@@ -143,6 +149,7 @@ const Chat = () => {
 								const memberImage = memberData?.memberImage
 									? `${REACT_APP_API_URL}/${memberData.memberImage}`
 									: `img/profile/defaultUser.svg`;
+
 								return memberData?._id === user?._id ? (
 									<Box
 										component={'div'}
@@ -155,10 +162,21 @@ const Chat = () => {
 										<div className={'msg-right'}>{text}</div>
 									</Box>
 								) : (
-									<Box flexDirection={'row'} style={{ display: 'flex' }} sx={{ m: '10px 0px' }} component={'div'}>
-										<Avatar alt={'jonik'} src={memberImage} />
-										<div className={'msg-left'}>{text}</div>
+									<Box
+										component={'div'}
+										flexDirection={'row'}
+										style={{ display: 'flex' }}
+										alignItems={'flex-end'}
+										justifyContent={'flex-end'}
+										sx={{ m: '10px 0px' }}
+									>
+										<div className={'msg-right'}>{text}</div>
 									</Box>
+									//need to fix here
+									// <Box flexDirection={'row'} style={{ display: 'flex' }} sx={{ m: '10px 0px' }} component={'div'}>
+									// 	<Avatar alt={'jonik'} src={memberImage} />
+									// 	<div className={'msg-right'}>{text}</div>
+									// </Box>
 								);
 							})}
 							<></>
@@ -167,11 +185,11 @@ const Chat = () => {
 				</Box>
 				<Box className={'chat-bott'} component={'div'}>
 					<input
-						ref={textInput}
 						type={'text'}
 						name={'message'}
 						className={'msg-input'}
 						placeholder={'Type message'}
+						value={messageInput}
 						onChange={getInputMessageHandler}
 						onKeyDown={getKeyHandler}
 					/>
