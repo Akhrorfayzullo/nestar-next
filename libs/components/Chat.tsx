@@ -64,7 +64,6 @@ const Chat = () => {
 	useEffect(() => {
 		socket.onmessage = (msg) => {
 			const data = JSON.parse(msg.data);
-			console.log('WebSocket message: ', data);
 
 			switch (data.event) {
 				case 'info':
@@ -119,8 +118,9 @@ const Chat = () => {
 	};
 
 	const onClickHandler = () => {
-		if (!messageInput) sweetErrorAlert(Messages.error4);
-		else {
+		if (!messageInput) {
+			sweetErrorAlert(Messages.error4);
+		} else {
 			socket.send(JSON.stringify({ event: 'message', data: messageInput }));
 			setMessageInput('');
 		}
@@ -148,7 +148,7 @@ const Chat = () => {
 								const { text, memberData } = ele;
 								const memberImage = memberData?.memberImage
 									? `${REACT_APP_API_URL}/${memberData.memberImage}`
-									: `img/profile/defaultUser.svg`;
+									: '/img/profile/defaultUser.svg';
 
 								return memberData?._id === user?._id ? (
 									<Box
@@ -162,33 +162,21 @@ const Chat = () => {
 										<div className={'msg-right'}>{text}</div>
 									</Box>
 								) : (
-									<Box
-										component={'div'}
-										flexDirection={'row'}
-										style={{ display: 'flex' }}
-										alignItems={'flex-end'}
-										justifyContent={'flex-end'}
-										sx={{ m: '10px 0px' }}
-									>
-										<div className={'msg-right'}>{text}</div>
+									<Box flexDirection={'row'} style={{ display: 'flex' }} sx={{ m: '10px 0px' }} component={'div'}>
+										<Avatar alt={memberData?.memberNick ?? 'Guest'} src={memberImage} />
+										<div className={'msg-left'}>{text}</div>
 									</Box>
-									//need to fix here
-									// <Box flexDirection={'row'} style={{ display: 'flex' }} sx={{ m: '10px 0px' }} component={'div'}>
-									// 	<Avatar alt={'jonik'} src={memberImage} />
-									// 	<div className={'msg-right'}>{text}</div>
-									// </Box>
 								);
 							})}
-							<></>
 						</Stack>
 					</ScrollableFeed>
 				</Box>
 				<Box className={'chat-bott'} component={'div'}>
 					<input
 						type={'text'}
-						name={'message'}
+						name={'messageInput'}
 						className={'msg-input'}
-						placeholder={'Type message'}
+						placeholder={'Type messageInput'}
 						value={messageInput}
 						onChange={getInputMessageHandler}
 						onKeyDown={getKeyHandler}
